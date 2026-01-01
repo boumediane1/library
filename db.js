@@ -14,6 +14,10 @@ const db = {
     },
   ],
   livres: [],
+  auteurs: [],
+  categories: [],
+  adherents: [],
+  emprunts: [],
 };
 
 if (localStorage.getItem("db") === null) {
