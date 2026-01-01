@@ -30,12 +30,8 @@ function renderBooks() {
       <td class="border p-2">${livre.titre}</td>
       <td class="border p-2">${livre.auteur}</td>
       <td class="border p-2">${livre.anneePublication}</td>
-      <td class="border p-2">${livre.disponible ? "Oui" : "Non"}</td>
+      <td class="border p-2">${livre.quantite}</td>
       <td class="border p-2 space-x-2">
-        <button onclick="toggleDisponibilite(${livre.id})"
-          class="bg-yellow-500 text-white px-2 rounded">
-          Toggle
-        </button>
         <button onclick="deleteLivre(${livre.id})"
           class="bg-red-600 text-white px-2 rounded">
           Delete
@@ -57,7 +53,7 @@ form.addEventListener("submit", (e) => {
     titre: titre.value,
     auteur: auteur.value,
     anneePublication: Number(annee.value),
-    disponible: true,
+    quantite: Number(quantite.value),
   };
 
   db.livres.push(livre);

@@ -36,8 +36,13 @@ function loadSelects() {
     .join("");
 
   livreSelect.innerHTML = db.livres
-    .filter((l) => l.disponible)
-    .map((l) => `<option value="${l.id}">${l.titre}</option>`)
+    .filter((l) => l.quantite > 0)
+    .map(
+      (l) =>
+        `<option value="${l.id}">
+          ${l.titre} (Stock: ${l.quantite})
+        </option>`,
+    )
     .join("");
 }
 
@@ -46,7 +51,6 @@ function updatePagination(totalPages) {
   prevBtn.disabled = currentPage === 1;
   nextBtn.disabled = currentPage === totalPages || totalPages === 0;
 }
-
 function renderEmprunts() {
   const db = getDB();
   table.innerHTML = "";
@@ -85,23 +89,27 @@ function renderEmprunts() {
 
   updatePagination(totalPages);
 }
-
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
   const db = getDB();
+  const livre = db.livres.find((l) => l.id === Number(livreId.value));
+
+  if (livre.quantite <= 0) {
+    alert("Ce livre n'est plus disponible");
+    return;
+  }
 
   db.emprunts.push({
     id: Date.now(),
     adherentId: Number(adherentId.value),
-    livreId: Number(livreId.value),
+    livreId: livre.id,
     dateEmprunt: new Date().toISOString().split("T")[0],
     dateRetourPrevue: dateRetour.value,
     rendu: false,
   });
 
-  const livre = db.livres.find((l) => l.id === Number(livreId.value));
-  livre.disponible = false;
+  livre.quantite--;
 
   saveDB(db);
   form.reset();
@@ -114,10 +122,13 @@ form.addEventListener("submit", (e) => {
 function retourLivre(id) {
   const db = getDB();
   const emprunt = db.emprunts.find((e) => e.id === id);
+
+  if (!emprunt || emprunt.rendu) return;
+
   emprunt.rendu = true;
 
   const livre = db.livres.find((l) => l.id === emprunt.livreId);
-  livre.disponible = true;
+  livre.quantite++;
 
   saveDB(db);
   loadSelects();
