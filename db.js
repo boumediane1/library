@@ -13,6 +13,7 @@ const db = {
       role: "MEMBER",
     },
   ],
+  livres: [],
 };
 
 if (localStorage.getItem("db") === null) {
